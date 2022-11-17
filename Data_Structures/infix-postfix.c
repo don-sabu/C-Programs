@@ -1,75 +1,82 @@
-#include <stdio.h>
-char stack[20],postexp[20];
-int stop=-1,ptop=-1;
-void ppush(char item)
+#include<stdio.h>
+int stop=0,ptop=-1;
+char stack[50],Q[50],postfix[50];
+char c,ch,chr;
+void spush(char ch)
 {
-	ptop++;
-	postexp[ptop]=item;
+    stop++;
+    stack[stop]=ch;
 }
-void spush(char item)
+void ppush(char ch)
 {
-	stop++;
-	stack[stop]=item;
+        ptop++;
+        postfix[ptop]=ch;
 }
 char pop()
 {
-	return stack[stop--];
+    ch=stack[stop];
+    stop--;
+    return(ch);
 }
-int priority(char c)
+int priority(char ch)
 {
-	if(c=='^')
-		return 3;
-	else if(c=='*'||c=='/'||c=='%')
-		return 2;
-	else
-		return 1;
+    if(ch=='+'||ch=='-')
+        return 1;
+    else if(ch=='*'||ch=='/')
+        return 2;
+    else
+        return 3;
 }
 void display()
 {
-	while(ptop>=0)
-		printf("%c",postexp[ptop--]);
-	printf("\n");
+    printf("%s\n",postfix);
 }
 int main()
 {
-	char exp[20],c,ch,chr;
-	int i=0;
-	printf("Enter the infix expression\n");
-	scanf("%s",exp);
-	spush('(');
-	do
-	{
-		ch=exp[i];
-		if(((ch>='A')&&(ch<='Z'))||((ch>='a')&&(ch<='z')))
-			ppush(ch);
-		else if(ch=='(')
-			spush(ch);
-		else if(ch==')')
-		{
-			c=pop();
-			while(c!='(')
-			{
-				ppush(c);
-				c=pop();
-			}
-		}
-		else
-		{
-			chr=pop();
-			while(chr!='(')
-			{
-				if(priority(c)>priority(chr))
-				{
-					spush(chr);
-					break;
-				}
-				else
-					ppush(chr);
-				chr=pop();
-			}
-			spush(c);
-		}
-		i++;
-	}while(stop!=-1);
-	display();
+    int i=0;
+    printf("Enter an infix expression with closing bracket\n");
+    scanf("%s",Q);
+    stack[stop]='(';
+    while(stop!=-1)
+    {
+        c=Q[i];
+        i++;
+        if((c>='A'&&c<='Z')||(c>='a'&&c<='z'))
+            ppush(c);
+        else if(c=='(')
+            spush(c);
+        else if(c==')')
+        {
+            while(stack[stop]!='(')
+            {
+                chr=pop();
+                ppush(chr);
+            }
+            stop--;
+        }
+        else
+        {
+            do
+            {   
+                chr=pop();
+                if(chr=='(')
+                {
+                    spush(chr);
+                    break;
+                }
+                else if(priority(c)>priority(chr))
+                {
+                    spush(chr);
+                    break;
+                }
+                else if(priority(c)<priority(chr))
+                    ppush(chr);
+                else
+                    ppush(chr);
+            }while(chr!='(');
+            spush
+        (c);
+        }
+    }
+    display();
 }
