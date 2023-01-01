@@ -1,137 +1,91 @@
-#include <stdio.h>
-int q[20], top = -1, front = -1, rear = -1, a[20][20], vis[20], stack[20];
-void add(int item)
+#include<stdio.h>
+int top=-1,front=0,rear=-1,stack[10],queue[10];
+void enqueue(int item)
 {
-    if(rear == 19)
-        printf("QUEUE FULL");
-    else
-    {
-        if (rear == -1)
-        {
-            q[++rear] = item;
-            front++;
-        }
-        else
-            q[++rear] = item;
-    }
+    queue[++rear]=item;
 }
-int delete ()
+int dequeue()
 {
-    int k;
-    if ((front > rear) || (front == -1))
-        return (0);
-    else
+    return queue[front++];
+}
+void bfs(int n,int e[][n],int s)
+{
+    int status[n];
+    for(int i=0;i<n;i++)
+        status[i]=1;
+    enqueue(s);
+    status[s]=2;
+    while(rear>=front)
     {
-        k = q[front++];
-        return k;
+        s=dequeue();
+        status[s]=3;
+        printf("%d",s+1);
+        for(int i=0;i<n;i++)
+            if(e[s][i]==1&&status[i]==1)
+            {
+                enqueue(i);
+                status[i]=2;
+            }
+        if(rear>=front)
+            printf(" --> ");
     }
+    printf("\n");
 }
 void push(int item)
 {
-    if (top == 19)
-        printf("Stack overflow ");
-    else
-        stack[++top] = item;
+    stack[++top]=item;
 }
 int pop()
 {
-    int k;
-    if (top == -1)
-        return 0;
-    else
-    {
-        k = stack[top--];
-        return k;
-    }
+    return stack[top--];
 }
-void bfs(int s, int n)
+void dfs(int n,int e[][n],int s)
 {
-    int p, i;
-    add(s);
-    vis[s] = 1;
-    p = delete ();
-    if (p != 0)
-        printf("%d  ", p);
-    while (p != 0){
-        for (i = 1; i <= n; i++)
-            if ((a[p][i] != 0) && (vis[i] == 0)){
-                add(i);
-                vis[i] = 1;
-            }
-        p = delete ();
-        if (p != 0)
-            printf("%d  ", p);
-    }
-    for (i = 1; i <= n; i++)
-        if (vis[i] == 0)
-            bfs(i, n);
-}
-void dfs(int s, int n)
-{
-    int i, k;
+    int status[n];
+    for(int i=0;i<n;i++)
+        status[i]=1;
     push(s);
-    vis[s] = 1;
-    k = pop();
-    if (k != 0)
-        printf("%d  ", k);
-    while (k != 0)
+    status[s]=2;
+    while(top!=-1)
     {
-        for (i = 1; i <= n; i++)
-            if ((a[k][i] != 0) && (vis[i] == 0))
+        s=pop();
+        status[s]=2;
+        printf("%d",s+1);
+        for(int i=0;i<n;i++)
+            if(e[s][i]==1&&status[i]==1)
             {
                 push(i);
-                vis[i] = 1;
+                status[i]=2;
             }
-        k = pop();
-        if (k != 0)
-            printf("%d  ", k);
+        if(top!=-1)
+            printf(" --> ");
     }
-    for (i = 1; i <= n; i++)
-        if (vis[i] == 0)
-            dfs(i, n);
 }
-void main()
+int main()
 {
-    int n,i,s,c,j;
-    printf("Enter the number of vertices : ");
-    scanf("%d", &n);
-    printf("Enter 1 if there is an edge between A and B. Otherwise 0\n");
-    for (i = 1; i <= n; i++)
-    {
-        for (j = 1; j <= n; j++)
+    int n,s;
+    printf("Enter the number of vertices: ");
+    scanf("%d",&n);
+    int edge[n][n];
+    printf("Enter 1 if there exists an edge. Otherwise 0\n");
+    for(int i=0;i<n;i++)
+        for(int j=0;j<n;j++)
         {
-            printf("%d --> %d : ", i, j);
-            scanf("%d", &a[i][j]);
+            printf("%d --> %d: ",i+1,j+1);
+            scanf("%d",&edge[i][j]);
         }
-    }
-    printf("\nAdjacency Matrix\n");
-    for (i = 1; i <= n; i++)
+    printf("Vertices:");
+    for(int i=0;i<n;i++)
+        printf("  %d",i+1);
+    printf("\n-----Adjacency Matrix-----\n");
+    for(int i=0;i<n;i++)
     {
-        for (j = 1; j <= n; j++)
-            printf(" %d", a[i][j]);
+        for(int j=0;j<n;j++)
+            printf(" %d",edge[i][j]);
         printf("\n");
     }
-    do
-    {
-        for (i = 1; i <= n; i++)
-            vis[i] = 0;
-        printf("\n1.Breath First Search\n2.Depth First Search\n");
-        printf("Enter your choice: ");
-        scanf("%d", &c);
-        switch (c)
-        {
-            case 1:
-                printf("Source : ");
-                scanf("%d", &s);
-                bfs(s, n);
-                break;
-            case 2:
-                printf("Source : ");
-                scanf("%d", &s);
-                dfs(s, n);
-                break;
-            default: 
-                c=0;
-        }
-    } while (c!=0);
+    printf("Enter the source: ");
+    scanf("%d",&s);
+    bfs(n,edge,s-1);
+    dfs(n,edge,s-1);
 }
